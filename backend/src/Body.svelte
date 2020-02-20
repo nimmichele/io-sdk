@@ -1,10 +1,12 @@
 <script>
-import Lorem from './Lorem.svelte'
-import Card from './Card.svelte'
-import Form from './Form.svelte'
+import Sidebar from './Sidebar.svelte'
+import Griglia from './Griglia.svelte'
+import Test from './Test.svelte'
 </script>
-<div class="container my-4">
-  <Lorem/>
-  <Card/>
-  <Form/>
-</div>
+
+
+<Griglia/>
+
+<Sidebar/>
+<Test />
+

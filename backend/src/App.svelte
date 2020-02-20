@@ -2,13 +2,10 @@
  import Header from './Header.svelte'
  import Body from './Body.svelte'
  import Footer from './Footer.svelte'
- import Cookiebar from './Cookiebar.svelte'
-</script>
+ </script>
 
 <main>
-	<Header/>
-	<Body/>
-	<Footer/>
-	<Cookiebar/>
+	<Header />
+	<Body />
 </main>
 
