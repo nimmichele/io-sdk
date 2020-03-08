@@ -14,3 +14,5 @@ const OpenwhiskStandaloneImage = "actionloop/iosdk:latest"
 
 // APIHOST to send messages
 const APIHOST = "https://api.cd.italia.it/api/v1"
+
+const dockerNetwork = "iosdk-network"

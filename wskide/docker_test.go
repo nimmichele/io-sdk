@@ -15,3 +15,11 @@ func ExampleDockerVersion() {
 	// docker version --format {{.Server.Version}}
 	//  no docker
 }
+
+func ExampleDockerCreateNetwork() {
+	*DryRunFlag = false
+	DryRunPush("", "network created")
+	dockerCreateNetwork(dockerNetwork)
+	// Output:
+	// 'bridge'
+}

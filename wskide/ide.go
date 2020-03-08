@@ -3,7 +3,6 @@ package wskide
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 )
 
 // IdeDeploy deploys and mounts a folder
@@ -22,14 +21,16 @@ func IdeDeploy(dir string) error {
 func IdeDestroy() error {
 	fmt.Println("Destroying IDE...")
 	fmt.Println(Sys("docker kill ide-js"))
+	err := dockerDeleteNetwork(dockerNetwork)
 	fmt.Println("Done.")
-	return nil
+	return err
 }
 
 // ideDockerRun starts the ide
 // it also mounts the project folder if the directory is not empty
 func ideDockerRun(dir string) (err error) {
 
+	err = dockerCreateNetwork(dockerNetwork)
 	err = Run("docker pull " + IdeJsImage)
 	if err != nil {
 		return err
@@ -44,16 +45,8 @@ func ideDockerRun(dir string) (err error) {
 		}
 	}
 
-	openwhiskIP := Sys("docker inspect",
-		"--format={{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}",
-		"openwhisk")
-	openwhiskIP = strings.TrimSpace(openwhiskIP)
-	if strings.HasPrefix(openwhiskIP, "Error:") {
-		return fmt.Errorf("%s", openwhiskIP)
-	}
-
 	command := fmt.Sprintf(`docker run -d -p 3000:3000 --rm --name ide-js 
-	--add-host=openwhisk:%s %s %s`, openwhiskIP, mount, IdeJsImage)
+	--network %s %s %s`, dockerNetwork, mount, IdeJsImage)
 	//OpenWhiskDockerWait()
 	Sys(command)
 	return nil
