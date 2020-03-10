@@ -55,7 +55,8 @@ func parse(cmd string) {
 		WhiskDestroy()
 	// Start
 	case startCmd.FullCommand():
-		err := Start(*startDirArg)
+		err := dockerNetworkCreate(dockerNetwork)
+		err = Start(*startDirArg)
 		ShowError(err)
 		if err == nil {
 			time.Sleep(2 * time.Second)
@@ -64,6 +65,8 @@ func parse(cmd string) {
 	// Stop
 	case stopCmd.FullCommand():
 		Stop()
+		err := dockerNetworkRm(dockerNetwork)
+		ShowError(err)
 	// Init
 	case initCmd.FullCommand():
 		ShowError(Init(*initDirArg, *initLangFlag, os.Stderr))

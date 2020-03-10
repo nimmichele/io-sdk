@@ -3,6 +3,7 @@ package wskide
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 func dockerVersion() (string, error) {
@@ -17,7 +18,7 @@ func dockerStatus(container string) {
 	fmt.Print(container, ": ", res)
 }
 
-func dockerCreateNetwork(network string) error {
+func dockerNetworkCreate(network string) error {
 	_, err := SysErr("@docker network inspect --format='{{.Driver}}' " + network)
 	if err != nil {
 		_, err = SysErr("@docker network create " + network)
@@ -28,11 +29,19 @@ func dockerCreateNetwork(network string) error {
 	return err
 }
 
-func dockerDeleteNetwork(network string) error {
+func dockerNetworkRm(network string) error {
 	res, err := SysErr("@docker network inspect --format={{.Driver}} " + network)
 	if strings.TrimSpace(res) == "bridge" {
-		fmt.Printf("Network %s deleted\n", network)
-		_, err = SysErr("@docker network rm " + network)
+		fmt.Printf("Destroying %s...\n\n", dockerNetwork)
+
+		deadline := time.Now().Add(10 * time.Second)
+		for {
+			_, err := SysErr("@docker", "network", "rm", network)
+			if err == nil || time.Now().After(deadline) {
+				fmt.Println("Done.")
+				break
+			}
+		}
 	}
 	return err
 }

@@ -21,16 +21,14 @@ func IdeDeploy(dir string) error {
 func IdeDestroy() error {
 	fmt.Println("Destroying IDE...")
 	fmt.Println(Sys("docker kill ide-js"))
-	err := dockerDeleteNetwork(dockerNetwork)
 	fmt.Println("Done.")
-	return err
+	return nil
 }
 
 // ideDockerRun starts the ide
 // it also mounts the project folder if the directory is not empty
 func ideDockerRun(dir string) (err error) {
 
-	err = dockerCreateNetwork(dockerNetwork)
 	err = Run("docker pull " + IdeJsImage)
 	if err != nil {
 		return err

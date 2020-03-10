@@ -6,20 +6,18 @@ import (
 
 // WhiskDeploy deploys openwhisk standalone
 func WhiskDeploy() error {
-	err := dockerCreateNetwork(dockerNetwork)
 	fmt.Println("Deploying Whisk...")
 	fmt.Println(whiskDockerRun())
 	fmt.Println("Done.")
-	return err
+	return nil
 }
 
 // WhiskDestroy destroys openwhisk standalone
 func WhiskDestroy() error {
 	fmt.Println("Destroying Whisk...")
 	fmt.Println(Sys("docker exec openwhisk stop"))
-	err := dockerDeleteNetwork(dockerNetwork)
 	fmt.Println("Done.")
-	return err
+	return nil
 }
 
 // return empty string if ok, otherwise the error
@@ -31,14 +29,14 @@ func whiskDockerRun() string {
 
 	cmd := fmt.Sprintf(`docker run -d -p 3280:3280
 --rm --name openwhisk --hostname openwhisk --network %s
--v //var/run/docker.sock:/var/run/docker.sock %s`, dockerNetwork, OpenwhiskStandaloneImage)
+-v /var/run/docker.sock:/var/run/docker.sock %s`, dockerNetwork, OpenwhiskStandaloneImage)
 	_, err = SysErr(cmd)
 	if err != nil {
 		return "cannot start server: " + err.Error()
 	}
-	err = Run("docker exec openwhisk waitready")
-	if err != nil {
-		return "server readyness error: " + err.Error()
-	}
+	// err = Run("docker exec openwhisk waitready")
+	// if err != nil {
+	// 	return "server readyness error: " + err.Error()
+	// }
 	return ""
 }

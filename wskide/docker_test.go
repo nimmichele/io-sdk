@@ -17,9 +17,9 @@ func ExampleDockerVersion() {
 }
 
 func ExampleDockerCreateNetwork() {
-	*DryRunFlag = false
+	//*DryRunFlag = false
 	DryRunPush("", "network created")
-	dockerCreateNetwork(dockerNetwork)
+	dockerNetworkCreate(dockerNetwork)
 	// Output:
 	// 'bridge'
 }
