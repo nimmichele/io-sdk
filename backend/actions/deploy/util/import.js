@@ -31,7 +31,12 @@ const sampleForm = [
         "description": "Password",
         "type": "password",
         "required": true
-    }
+    },
+    {
+        "type": "message",
+        "name": "note",
+        "description": "Replace this example deploying a custom importer.",
+    },
 ]
 
 const sampleData = [
@@ -40,17 +45,17 @@ const sampleData = [
     "due_date": 44197,
     "fiscal_code": "ISPXNB32R82Y766F",
     "invalid_after_due_date": false,
-    "markdown": "# Welcome, Giovanni Rossi\\\\nYour fiscal code is ISPXNB32R82Y766F\\\\n",
+    "markdown": "# Welcome, Giovanni Rossi\\\\nYour fiscal code is ISPXNB32R82Y766F\\\\nI hope you will enjoy IO.",
     "notice_number": 1,
-    "subject": "Hi Giovanni",
+    "subject": "Welcome to IO, Giovanni",
   },
   {
     "amount": 0,
     "due_date": 44197,
     "fiscal_code": "ISPXNB32R82Y766D",
     "invalid_after_due_date": false,
-    "markdown": "# Welcome, Giovanni Rossi\\\\nYour fiscal code is ISPXNB32R82Y766F\\\\n",
+    "markdown": "# Welcome, Luca Rossi\\\\nYour fiscal code is ISPXNB32R82Y766D\\\\n.I hope you will enjoy IO.",
     "notice_number": 1,
-    "subject": "Hi Luca",
+    "subject": "Welcome to IO, Luca",
   }
 ]
