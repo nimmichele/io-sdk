@@ -43,6 +43,10 @@ var (
 	stopCmd = kingpin.Command("stop", "Stop Development Environment")
 	// status
 	statusCmd = kingpin.Command("status", "Check Containers Status")
+	// config
+	configCmd = kingpin.Command("config", "Edit config file $HOME/.iosdk")
+	// prova
+	provaCmd = kingpin.Command("prova", "Prova").Hidden()
 )
 
 func parse(cmd string) {
@@ -79,6 +83,10 @@ func parse(cmd string) {
 		dockerStatus("openwhisk")
 		dockerStatus("redis")
 		dockerStatus("ide-js")
+	case configCmd.FullCommand():
+		config()
+	case provaCmd.FullCommand():
+		prova()
 	default:
 		kingpin.Usage()
 	}
@@ -87,7 +95,7 @@ func parse(cmd string) {
 // Main entrypoint for wskide
 func Main() {
 	cmd := kingpin.Parse()
-	if err := LoadConfig(); err != nil {
+	if _, err := LoadConfig(); err != nil && cmd != configCmd.FullCommand() {
 		fmt.Println("You need to run 'iosdk config', first.")
 		os.Exit(1)
 	}
