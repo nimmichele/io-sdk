@@ -3,6 +3,7 @@ package wskide
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -22,10 +23,17 @@ type IoSDKConfig struct {
 	WhiskNamespace string `json:"whisk-namespace"`
 	// IoAPIKey is the io api key
 	IoAPIKey string `json:"io-apikey"`
+	// IoMessages is the io api key
+	IoMessages string `json:"io-messages"`
+	// AppDir is the application directory
+	AppDir string `json:"app-dir"`
 }
 
-// LoadConfig load the configuration
-func LoadConfig() (Config IoSDKConfig, err error) {
+// Config is the global configuration
+var Config *IoSDKConfig
+
+// ConfigLoad loads the configuration
+func ConfigLoad() error {
 	configFile, err := homedir.Expand("~/.iosdk")
 	if err != nil {
 		return Config, err
@@ -99,4 +107,75 @@ func config() {
 		return
 	}
 	fmt.Println("Wrote", configFile, "ok")
+}
+
+// ConfigSave save configuration file
+func ConfigSave() error {
+	if Config == nil {
+		return errors.New("empty configuration")
+	}
+	configFile, err := homedir.Expand("~/.iosdk")
+	if err != nil {
+		return err
+	}
+	// saving
+	json, err := json.MarshalIndent(Config, "", " ")
+	err = ioutil.WriteFile(configFile, json, 0644)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Wrote", configFile)
+	return nil
+}
+
+// configureDefaults sets defaults in configuration
+func configureDefaults() {
+	if Config.IoMessages == "" {
+		Config.IoMessages = "https://api.cd.italia.it/api/v1/messages"
+	}
+	if Config.WhiskAPIHost == "" {
+		Config.WhiskAPIHost = "http://localhost:3280"
+	}
+	if Config.WhiskNamespace == "" {
+		Config.WhiskNamespace = "guest"
+	}
+
+	// generate random key if not there
+	if Config.WhiskAPIKey == "" {
+		key := *initWhiskKeyFlag
+		if key == "" {
+			Config.WhiskAPIKey = fmt.Sprintf("%s:%s", uuid.New(), RandomString(64))
+		} else {
+			Config.WhiskAPIKey = key
+		}
+	}
+}
+
+func configureAsk() error {
+	// ask or override api key
+	key := *initIOKeyFlag
+	if key == "" {
+		key = Input("IO Api Key", Config.IoAPIKey)
+	}
+	if key == "" {
+		return errors.New("You need to provide an api key")
+	}
+	Config.IoAPIKey = key
+	return nil
+}
+
+// Configure asking values or setting defaults
+func Configure(dir string) error {
+	err := ConfigLoad()
+	if err != nil {
+		// initialized
+		Config = &IoSDKConfig{}
+	}
+	// ignore errors
+	Config.AppDir = dir
+	configureDefaults()
+	if err := configureAsk(); err != nil {
+		return err
+	}
+	return ConfigSave()
 }

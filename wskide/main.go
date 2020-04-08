@@ -33,15 +33,19 @@ var (
 	whiskDeployCmd  = debugCmd.Command("whisk-deploy", "Create Whisk deployment").Hidden()
 	whiskDestroyCmd = debugCmd.Command("whisk-destroy", "Destroy Whisk deployment").Hidden()
 	redisDeployCmd  = debugCmd.Command("redis-deploy", "Create Redis deployment").Hidden()
-	redisDestroyCmd = debugCmd.Command("redius-destroy", "Destroy Redis deployment").Hidden()
-
+	redisDestroyCmd = debugCmd.Command("redis-destroy", "Destroy Redis deployment").Hidden()
+	inputCmd        = debugCmd.Command("input", "Input test").Hidden()
+	inputArgCmd     = inputCmd.Arg("input arg", "input arg").Default("").String()
+	inputSelectFlag = inputCmd.Flag("select", "select").Bool()
 	// start, stop, init and status
-	startCmd    = kingpin.Command("start", "Start Development Enviroment")
-	startDirArg = startCmd.Arg("dir", "Project dir").Required().String()
+	startCmd = kingpin.Command("start", "Start Development Enviroment")
 	// init
-	initCmd      = kingpin.Command("init", "Initialise SDK Repository")
-	initLangFlag = initCmd.Flag("language", "SDK language").Default("javascript").String()
-	initDirArg   = initCmd.Arg("directory", "work directory").Required().String()
+	initCmd          = kingpin.Command("init", "Initialise SDK Repository")
+	initDirArg       = initCmd.Arg("directory", "work directory").Default("").String()
+	initRepoArg      = initCmd.Arg("repo", "Repository").Default("").String()
+	initWhiskKeyFlag = initCmd.Flag("whisk-apikey", "Whisk API Key").Default("").String()
+	initIOKeyFlag    = initCmd.Flag("io-apikey", "IO API Key").Default("").String()
+
 	// stop
 	stopCmd = kingpin.Command("stop", "Stop Development Environment")
 	// status
@@ -52,9 +56,8 @@ var (
 	provaCmd = kingpin.Command("prova", "Prova").Hidden()
 )
 
-func parse(cmd string) {
+func parseDebug(cmd string) bool {
 	switch cmd {
-	// Debug
 	case ideDeployCmd.FullCommand():
 		IdeDeploy("")
 	case ideDestroyCmd.FullCommand():
@@ -67,9 +70,28 @@ func parse(cmd string) {
 		RedisDeploy()
 	case redisDestroyCmd.FullCommand():
 		RedisDestroy()
+	case inputCmd.FullCommand():
+		if !*inputSelectFlag {
+			fmt.Printf("result: '%s'\n", Input("Input Test", *inputArgCmd))
+		} else {
+			fmt.Printf("select: '%s'\n", Select("Select Test", *inputArgCmd))
+		}
+	default:
+		return false
+	}
+	return true
+}
+
+func parse(cmd string) {
+	// debugging (hidden) commands
+	if parseDebug(cmd) {
+		return
+	}
+	// user visible commands
+	switch cmd {
 	// Start
 	case startCmd.FullCommand():
-		err := Start(*startDirArg)
+		err := Start()
 		ShowError(err)
 		if err == nil {
 			time.Sleep(2 * time.Second)
@@ -80,7 +102,11 @@ func parse(cmd string) {
 		Stop()
 	// Init
 	case initCmd.FullCommand():
-		ShowError(Init(*initDirArg, *initLangFlag, os.Stderr))
+		dir, err := Init(*initDirArg, *initRepoArg, os.Stderr)
+		if err == nil {
+			err = Configure(dir)
+		}
+		ShowError(err)
 	// Status
 	case statusCmd.FullCommand():
 		dockerStatus("openwhisk")
@@ -98,10 +124,6 @@ func parse(cmd string) {
 // Main entrypoint for wskide
 func Main() {
 	cmd := kingpin.Parse()
-	if _, err := LoadConfig(); err != nil && cmd != configCmd.FullCommand() {
-		fmt.Println("You need to run 'iosdk config', first.")
-		os.Exit(1)
-	}
 	if *debugFlag {
 		log.SetLevel(log.DebugLevel)
 	}
