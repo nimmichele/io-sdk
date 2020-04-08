@@ -33,7 +33,7 @@ type IoSDKConfig struct {
 var Config *IoSDKConfig
 
 // ConfigLoad loads the configuration
-func ConfigLoad() error {
+func ConfigLoad() (*IoSDKConfig, error) {
 	configFile, err := homedir.Expand("~/.iosdk")
 	if err != nil {
 		return Config, err
@@ -68,7 +68,7 @@ func config() {
 
 	// if WhiskAPIKey is "" => generate a random one
 	if ioSDKConfig.WhiskAPIKey == "" {
-		pass := randomString(64)
+		pass := RandomString(64)
 		randomWhiskAPIKey := fmt.Sprintf("%s:%s", uuid.New(), pass)
 		response["WhiskAPIKey"] = randomWhiskAPIKey
 	} else {
@@ -166,7 +166,7 @@ func configureAsk() error {
 
 // Configure asking values or setting defaults
 func Configure(dir string) error {
-	err := ConfigLoad()
+	Config, err := ConfigLoad()
 	if err != nil {
 		// initialized
 		Config = &IoSDKConfig{}

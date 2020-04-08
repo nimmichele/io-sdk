@@ -14,7 +14,8 @@ import (
 func Init(dir, repo string, log sideband.Progress) (string, error) {
 
 	appDir := "importer"
-	if ConfigLoad() == nil {
+	config, _ := ConfigLoad()
+	if config == nil {
 		appDir = Config.AppDir
 	}
 

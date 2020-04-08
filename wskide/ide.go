@@ -27,7 +27,7 @@ func IdeDestroy() error {
 // ideDockerRun starts the ide
 // it also mounts the project folder if the directory is not empty
 func ideDockerRun(dir string) (err error) {
-	Config, _ := LoadConfig()
+	Config, _ := ConfigLoad()
 
 	err = Run("docker pull " + IdeJsImage)
 	if err != nil {

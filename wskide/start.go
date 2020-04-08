@@ -4,7 +4,7 @@ import "fmt"
 
 // Start openwhisk-ide
 func Start() error {
-	if err := ConfigLoad(); err != nil {
+	if _, err := ConfigLoad(); err != nil {
 		fmt.Println("You need to run 'iosdk init ', first.")
 		return err
 	}

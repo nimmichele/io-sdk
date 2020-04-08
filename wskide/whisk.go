@@ -20,7 +20,7 @@ func WhiskDestroy() error {
 
 // return empty string if ok, otherwise the error
 func whiskDockerRun() string {
-	Config, _ := LoadConfig()
+	Config, _ := ConfigLoad()
 	err := Run("docker pull " + OpenwhiskStandaloneImage)
 	if err != nil {
 		return "cannot pull " + OpenwhiskStandaloneImage
