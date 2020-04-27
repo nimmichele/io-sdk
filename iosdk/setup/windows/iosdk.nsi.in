@@ -16,7 +16,7 @@ InstallDir $PROGRAMFILES64\IOSDK
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-InstallDirRegKey HKLM "Software\io-sdk" "Install_Dir"
+InstallDirRegKey HKLM "Software\iosdk" "Install_Dir"
 
 ;--------------------------------
 
@@ -32,7 +32,7 @@ UninstPage instfiles
 ;--------------------------------
 
 ; The stuff to install
-Section "io-sdk (required)"
+Section "iosdk (required)"
 
   SectionIn RO
   
@@ -68,7 +68,7 @@ Section "Start Menu Shortcuts"
 
   CreateDirectory "$SMPROGRAMS\IOSDK"
   CreateShortcut "$SMPROGRAMS\iosdk\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  ;CreateShortcut "$SMPROGRAMS\iosdk\io-sdk.lnk" "$INSTDIR\iosdk_win.exe" "" "$INSTDIR\io-sdk.nsi" 0
+  ;CreateShortcut "$SMPROGRAMS\iosdk\iosdk.lnk" "$INSTDIR\iosdk_win.exe" "" "$INSTDIR\iosdk.nsi" 0
   
 SectionEnd
 
